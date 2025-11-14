@@ -7,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/vehicle_card.dart';
 import '../../../../common/models/vehicle_listing.dart';
+import '../../../home/presentation/screens/main_navigation_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   String? _selectedBrand;
   String? _selectedCity;
   double? _maxPrice;
+  String? _selectedCondition; // New/Used
   
   // Auto-slider for hero background
   PageController? _pageController;
@@ -92,16 +94,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 const Text('CARBAZAR'),
               ],
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: _handleSearch,
-              ),
-              IconButton(
-                icon: const Icon(Icons.filter_list),
-                onPressed: _showFilterSheet,
-              ),
-            ],
           ),
 
           // Hero Section with Auto-Slider & Glassmorphism
@@ -119,9 +111,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 child: Stack(
                   children: [
-                    // Auto-sliding background images
+                    // Auto-sliding background images (swipe disabled)
                     PageView.builder(
                       controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(), // Disable swipe
                       itemCount: _heroImages.length,
                       onPageChanged: (index) {
                         setState(() => _currentPage = index);
@@ -150,113 +143,98 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                     ),
                     
-                    // Content
+                    // Content - Clean without blur effect on text
                     Padding(
                       padding: const EdgeInsets.all(AppTheme.spacing3),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Title with glassmorphism
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppTheme.spacing2,
-                                  vertical: AppTheme.spacing1,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Find Your Dream Car',
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        height: 1.2,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black.withOpacity(0.3),
-                                            offset: const Offset(0, 1),
-                                            blurRadius: 3,
-                                          ),
-                                        ],
-                                      ),
+                          // Title - Clean text with strong shadow
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Find Your Dream Car',
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.1,
+                                  letterSpacing: -0.5,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.6),
+                                      offset: const Offset(0, 2),
+                                      blurRadius: 8,
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Browse verified listings or join live auctions',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: Colors.white.withOpacity(0.95),
-                                      ),
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 4),
+                                      blurRadius: 16,
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: AppTheme.spacing2),
-                          
-                          // Search bar with glassmorphism
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.18),
-                                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: _handleSearch,
-                                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: AppTheme.spacing3,
-                                        vertical: 14,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.search,
-                                            color: Colors.white.withOpacity(0.95),
-                                            size: 22,
-                                          ),
-                                          const SizedBox(width: AppTheme.spacing2),
-                                          Expanded(
-                                            child: Text(
-                                              'Search Vehicles',
-                                              style: theme.textTheme.bodyLarge?.copyWith(
-                                                color: Colors.white.withOpacity(0.95),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.tune,
-                                            color: Colors.white.withOpacity(0.85),
-                                            size: 20,
-                                          ),
-                                        ],
-                                      ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Browse verified listings or join live auctions',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.5),
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 4,
                                     ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppTheme.spacing3),
+                          
+                          // Search bar - Solid white background
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: _handleSearch,
+                                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppTheme.spacing3,
+                                    vertical: 14,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.search,
+                                        color: AppColors.textSecondary,
+                                        size: 22,
+                                      ),
+                                      const SizedBox(width: AppTheme.spacing2),
+                                      Expanded(
+                                        child: Text(
+                                          'Search Vehicles',
+                                          style: theme.textTheme.bodyLarge?.copyWith(
+                                            color: AppColors.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -323,9 +301,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     onSelected: (_) => _selectPrice(),
                   ),
                   const SizedBox(width: AppTheme.spacing2),
+                  FilterChip(
+                    label: Text(_selectedCondition ?? 'Condition'),
+                    selected: _selectedCondition != null,
+                    onSelected: (_) => _selectCondition(),
+                  ),
+                  const SizedBox(width: AppTheme.spacing2),
                   if (_selectedBrand != null ||
                       _selectedCity != null ||
-                      _maxPrice != null)
+                      _maxPrice != null ||
+                      _selectedCondition != null)
                     ActionChip(
                       label: const Text('Clear All'),
                       onPressed: _clearFilters,
@@ -352,9 +337,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Navigate to auctions tab
-                    },
+                    onPressed: _navigateToAuctions,
                     child: const Text('View All'),
                   ),
                 ],
@@ -477,11 +460,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     // TODO: Show price selection dialog
   }
 
+  void _selectCondition() {
+    // TODO: Show condition selection dialog (New/Used)
+  }
+
   void _clearFilters() {
     setState(() {
       _selectedBrand = null;
       _selectedCity = null;
       _maxPrice = null;
+      _selectedCondition = null;
     });
   }
 
@@ -491,6 +479,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   void _toggleFavorite(VehicleListing listing) {
     // TODO: Toggle favorite status
+  }
+
+  void _navigateToAuctions() {
+    // Switch to auctions tab (index 1)
+    ref.read(currentIndexProvider.notifier).state = 1;
   }
 
   String _formatPrice(double price) {
