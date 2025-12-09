@@ -8,22 +8,25 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/constants/route_constants.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends ConsumerStatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  
   bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -35,38 +38,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Create Account'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(AppTheme.spacing4),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacing2),
                 
-                // Welcome Back Text
+                // Title
                 Text(
-                  'Welcome Back!',
+                  'Join CARBAZAR',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
-                const SizedBox(height: AppTheme.spacing2),
+                const SizedBox(height: AppTheme.spacing4),
                 
-                Text(
-                  'Login to continue',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
+                // Full Name Field
+                CustomTextField(
+                  controller: _nameController,
+                  labelText: 'Full Name',
+                  hintText: 'Enter your full name',
+                  prefixIcon: Icons.person_outline,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    if (value.trim().length < 3) {
+                      return 'Name must be at least 3 characters';
+                    }
+                    return null;
+                  },
                 ),
                 
-                const SizedBox(height: AppTheme.spacing6),
+                const SizedBox(height: AppTheme.spacing3),
                 
                 // Email Field
                 CustomTextField(
@@ -93,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 CustomTextField(
                   controller: _passwordController,
                   labelText: 'Password',
-                  hintText: 'Enter your password',
+                  hintText: 'Create a password (min 6 characters)',
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
@@ -104,38 +116,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
                     }
                     return null;
                   },
                 ),
                 
-                const SizedBox(height: AppTheme.spacing2),
+                const Spacer(),
                 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Forgot password feature coming soon')),
-                      );
-                    },
-                    child: const Text('Forgot Password?'),
-                  ),
-                ),
-                
-                const SizedBox(height: AppTheme.spacing4),
-                
-                // Login Button
+                // Sign Up Button
                 CustomButton(
-                  text: 'Login',
-                  onPressed: _isLoading ? null : _handleEmailLogin,
+                  text: 'Create Account',
+                  onPressed: _isLoading ? null : _handleSignup,
                   isLoading: _isLoading,
                   fullWidth: true,
                 ),
                 
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacing3),
                 
                 // Divider
                 Row(
@@ -154,11 +154,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ],
                 ),
                 
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacing3),
                 
-                // Google Sign In Button
+                // Google Sign Up Button
                 OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _handleGoogleSignIn,
+                  onPressed: _isLoading ? null : _handleGoogleSignup,
                   icon: const Icon(Icons.login, size: 20),
                   label: const Text('Continue with Google'),
                   style: OutlinedButton.styleFrom(
@@ -167,24 +167,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacing3),
                 
-                // Signup Link
+                // Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Don\'t have an account? ',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      'Already have an account? ',
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.pushReplacement(RouteConstants.signup),
-                      child: const Text('Sign Up'),
+                      onPressed: () => context.pushReplacement(RouteConstants.login),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Login',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
+                
+                const SizedBox(height: AppTheme.spacing2),
               ],
             ),
           ),
@@ -193,7 +206,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Future<void> _handleEmailLogin() async {
+  Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -201,7 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Implement email/password login with Firebase
+      // TODO: Implement email/password signup with Firebase
       await Future.delayed(const Duration(seconds: 2));
       
       if (mounted) {
@@ -211,7 +224,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login failed: $e'),
+            content: Text('Signup failed: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -223,11 +236,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  Future<void> _handleGoogleSignIn() async {
+  Future<void> _handleGoogleSignup() async {
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Implement Google Sign In
+      // TODO: Implement Google Sign Up
       await Future.delayed(const Duration(seconds: 2));
       
       if (mounted) {
@@ -237,7 +250,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign in failed: $e'),
+            content: Text('Google signup failed: $e'),
             backgroundColor: AppColors.error,
           ),
         );

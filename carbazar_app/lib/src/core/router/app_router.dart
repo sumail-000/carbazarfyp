@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/screens/welcome_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/signup_screen.dart';
+import '../../features/auth/presentation/screens/phone_input_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../../features/home/presentation/screens/main_navigation_screen.dart';
@@ -16,16 +19,40 @@ import '../constants/route_constants.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: RouteConstants.login,
+    initialLocation: RouteConstants.welcome,
     debugLogDiagnostics: true,
     routes: [
       // Auth Routes
+      GoRoute(
+        path: RouteConstants.welcome,
+        name: RouteConstants.welcomeName,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const WelcomeScreen(),
+        ),
+      ),
       GoRoute(
         path: RouteConstants.login,
         name: RouteConstants.loginName,
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const LoginScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteConstants.signup,
+        name: RouteConstants.signupName,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const SignupScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteConstants.phoneInput,
+        name: RouteConstants.phoneInputName,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const PhoneInputScreen(),
         ),
       ),
       GoRoute(

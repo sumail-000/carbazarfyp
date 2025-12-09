@@ -1,13 +1,25 @@
 class RouteConstants {
   // Auth Routes
+  static const String welcome = '/welcome';
+  static const String welcomeName = 'welcome';
+  
   static const String login = '/login';
   static const String loginName = 'login';
+  
+  static const String signup = '/signup';
+  static const String signupName = 'signup';
+  
+  static const String phoneInput = '/phone-input';
+  static const String phoneInputName = 'phone-input';
   
   static const String roleSelection = '/role-selection';
   static const String roleSelectionName = 'role-selection';
   
   static const String otpVerification = '/otp-verification';
   static const String otpVerificationName = 'otp-verification';
+  
+  static const String onboarding = '/onboarding';
+  static const String onboardingName = 'onboarding';
 
   // Main Navigation
   static const String home = '/';
