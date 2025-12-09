@@ -230,11 +230,12 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Save user role to backend
+      // TODO: Save user role to backend/state
       await Future.delayed(const Duration(seconds: 1));
       
       if (mounted) {
-        context.go(RouteConstants.home);
+        // Navigate to onboarding to collect profile details
+        context.go(RouteConstants.onboarding);
       }
     } catch (e) {
       if (mounted) {

@@ -8,6 +8,7 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/phone_input_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/home/presentation/screens/main_navigation_screen.dart';
 import '../../features/listings/presentation/screens/listing_detail_screen.dart';
 import '../../features/auctions/presentation/screens/auction_room_screen.dart';
@@ -73,6 +74,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: OtpVerificationScreen(phoneNumber: phoneNumber ?? ''),
           );
         },
+      ),
+      GoRoute(
+        path: RouteConstants.onboarding,
+        name: RouteConstants.onboardingName,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const OnboardingScreen(),
+        ),
       ),
 
       // Main Navigation

@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/widgets/auth_background.dart';
 import '../../../../core/constants/route_constants.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -31,13 +32,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
+    // Override theme for dark background support
+    return Theme(
+      data: AppTheme.darkTheme.copyWith(
+        inputDecorationTheme: AppTheme.darkTheme.inputDecorationTheme.copyWith(
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            borderSide: const BorderSide(color: Colors.white24),
+          ),
+          hintStyle: const TextStyle(color: Colors.white38),
+          labelStyle: const TextStyle(color: Colors.white70),
+          prefixIconColor: Colors.white70,
+          suffixIconColor: Colors.white70,
+        ),
       ),
-      body: SafeArea(
+      child: AuthBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppTheme.spacing4),
           child: Form(
@@ -45,23 +60,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacing6),
                 
                 // Welcome Back Text
-                Text(
+                const Text(
                   'Welcome Back!',
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: TextStyle(
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
                 const SizedBox(height: AppTheme.spacing2),
                 
-                Text(
+                const Text(
                   'Login to continue',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -99,6 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      color: Colors.white70,
                     ),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
@@ -121,7 +140,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SnackBar(content: Text('Forgot password feature coming soon')),
                       );
                     },
-                    child: const Text('Forgot Password?'),
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.white70),
+                    ),
                   ),
                 ),
                 
@@ -140,17 +162,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Divider
                 Row(
                   children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing2),
+                    const Expanded(child: Divider(color: Colors.white24)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing2),
                       child: Text(
                         'OR',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textTertiary,
-                        ),
+                        style: TextStyle(color: Colors.white38),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    const Expanded(child: Divider(color: Colors.white24)),
                   ],
                 ),
                 
@@ -163,7 +183,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   label: const Text('Continue with Google'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing3),
-                    side: BorderSide(color: AppColors.border),
+                    side: const BorderSide(color: Colors.white30),
+                    foregroundColor: Colors.white,
                   ),
                 ),
                 
@@ -173,15 +194,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Don\'t have an account? ',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                      style: TextStyle(color: Colors.white70),
                     ),
                     TextButton(
                       onPressed: () => context.pushReplacement(RouteConstants.signup),
-                      child: const Text('Sign Up'),
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: AppColors.accent, // High contrast accent
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),

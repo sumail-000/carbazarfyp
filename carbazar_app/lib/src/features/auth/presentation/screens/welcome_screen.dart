@@ -98,8 +98,6 @@ class WelcomeScreen extends ConsumerWidget {
               text: 'Get Started',
               onPressed: () => context.push(RouteConstants.signup),
               fullWidth: true,
-              backgroundColor: AppColors.primary, // Keep primary for button
-              foregroundColor: Colors.white,
             ),
             
             const SizedBox(height: AppTheme.spacing3),

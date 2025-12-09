@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/auth_background.dart';
+import '../../../../core/constants/route_constants.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -25,9 +29,18 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   bool _isLoading = false;
+  int _resendTimer = 60;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startResendTimer();
+  }
 
   @override
   void dispose() {
+    _timer?.cancel();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -37,15 +50,40 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     super.dispose();
   }
 
+  void _startResendTimer() {
+    _resendTimer = 60;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_resendTimer > 0) {
+        setState(() => _resendTimer--);
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verify Phone Number'),
+    return Theme(
+      data: AppTheme.darkTheme.copyWith(
+        inputDecorationTheme: AppTheme.darkTheme.inputDecorationTheme.copyWith(
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            borderSide: const BorderSide(color: Colors.white24),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            borderSide: const BorderSide(color: Colors.white, width: 2),
+          ),
+        ),
       ),
-      body: SafeArea(
+      child: AuthBackground(
         child: Padding(
           padding: const EdgeInsets.all(AppTheme.spacing4),
           child: Column(
@@ -53,18 +91,27 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
             children: [
               const SizedBox(height: AppTheme.spacing4),
               
-              Icon(
-                Icons.sms,
-                size: 64,
-                color: AppColors.primary,
+              Container(
+                padding: const EdgeInsets.all(AppTheme.spacing3),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.sms,
+                  size: 64,
+                  color: Colors.white,
+                ),
               ),
               
               const SizedBox(height: AppTheme.spacing4),
               
-              Text(
+              const Text(
                 'Enter Verification Code',
-                style: theme.textTheme.headlineSmall?.copyWith(
+                style: TextStyle(
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -72,11 +119,44 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               const SizedBox(height: AppTheme.spacing2),
               
               Text(
-                'We sent a 6-digit code to ${widget.phoneNumber}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                'We sent a 6-digit code to',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
                 ),
                 textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 4),
+              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.phoneNumber,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      'Edit',
+                      style: TextStyle(
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               
               const SizedBox(height: AppTheme.spacing5),
@@ -90,10 +170,25 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               const SizedBox(height: AppTheme.spacing4),
               
               // Resend Code
-              TextButton(
-                onPressed: _handleResendCode,
-                child: const Text('Didn\'t receive code? Resend'),
-              ),
+              _resendTimer > 0
+                  ? Text(
+                      'Resend code in $_resendTimer seconds',
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  : TextButton(
+                      onPressed: _handleResendCode,
+                      child: const Text(
+                        'Didn\'t receive code? Resend',
+                        style: TextStyle(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
               
               const Spacer(),
               
@@ -126,19 +221,13 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
         ],
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           counterText: '',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-            borderSide: BorderSide(color: AppColors.primary, width: 2),
-          ),
         ),
         onChanged: (value) {
           if (value.isNotEmpty && index < 5) {
@@ -169,16 +258,20 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Implement OTP verification
+      // TODO: Implement OTP verification with Firebase
       await Future.delayed(const Duration(seconds: 2));
       
       if (mounted) {
-        Navigator.of(context).pop();
+        // Navigate to role selection
+        context.go(RouteConstants.roleSelection);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verification failed: $e')),
+          SnackBar(
+            content: Text('Verification failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -189,10 +282,34 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   }
 
   Future<void> _handleResendCode() async {
-    // TODO: Implement resend OTP
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Code resent successfully')),
-    );
+    setState(() => _isLoading = true);
+    
+    try {
+      // TODO: Implement resend OTP with Firebase
+      await Future.delayed(const Duration(seconds: 1));
+      
+      if (mounted) {
+        _startResendTimer();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Code resent successfully'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to resend code: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
-
