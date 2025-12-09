@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../common/models/user_model.dart';
+import '../../../../common/providers/user_provider.dart';
 
 class RoleSelectionScreen extends ConsumerStatefulWidget {
   const RoleSelectionScreen({super.key});
@@ -230,12 +231,15 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Save user role to backend/state
+      // Save user role to state
+      ref.read(userRoleProvider.notifier).state = _selectedRole;
+      
+      // TODO: Save user role to backend
       await Future.delayed(const Duration(seconds: 1));
       
       if (mounted) {
-        // Navigate to onboarding to collect profile details
-        context.go(RouteConstants.onboarding);
+        // Navigate to onboarding with selected role
+        context.go(RouteConstants.onboarding, extra: _selectedRole);
       }
     } catch (e) {
       if (mounted) {

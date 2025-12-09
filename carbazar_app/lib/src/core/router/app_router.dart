@@ -16,6 +16,7 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/profile/presentation/screens/settings_screen.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../../common/models/user_model.dart';
 import '../constants/route_constants.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -78,10 +79,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteConstants.onboarding,
         name: RouteConstants.onboardingName,
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const OnboardingScreen(),
-        ),
+        pageBuilder: (context, state) {
+          final userRole = state.extra as UserRole? ?? UserRole.buyer;
+          return MaterialPage(
+            key: state.pageKey,
+            child: OnboardingScreen(userRole: userRole),
+          );
+        },
       ),
 
       // Main Navigation

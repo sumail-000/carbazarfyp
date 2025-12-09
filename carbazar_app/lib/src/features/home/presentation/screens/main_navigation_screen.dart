@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../auctions/presentation/screens/auctions_screen.dart';
 import '../../../wishlist/presentation/screens/wishlist_screen.dart';
-import '../../../notifications/presentation/screens/notifications_screen.dart';
+import '../../../messages/presentation/screens/messages_list_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 
 final currentIndexProvider = StateProvider<int>((ref) => 0);
@@ -20,7 +20,7 @@ class MainNavigationScreen extends ConsumerWidget {
       const HomeScreen(),
       const AuctionsScreen(),
       const WishlistScreen(),
-      const NotificationsScreen(),
+      const MessagesListScreen(),
       const ProfileScreen(),
     ];
 
@@ -51,9 +51,9 @@ class MainNavigationScreen extends ConsumerWidget {
             label: 'Wishlist',
           ),
           NavigationDestination(
-            icon: Icon(Icons.notifications_outlined),
-            selectedIcon: Icon(Icons.notifications),
-            label: 'Inbox',
+            icon: Icon(Icons.chat_bubble_outline),
+            selectedIcon: Icon(Icons.chat_bubble),
+            label: 'Messages',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

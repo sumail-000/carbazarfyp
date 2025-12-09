@@ -91,25 +91,6 @@ class ProfileScreen extends ConsumerWidget {
           ),
           _buildMenuItem(
             context,
-            icon: Icons.favorite,
-            title: 'Saved Vehicles',
-            subtitle: 'Your wishlist',
-            onTap: () {},
-          ),
-          _buildMenuItem(
-            context,
-            icon: Icons.chat_bubble_outline,
-            title: 'Messages',
-            subtitle: 'Chat with buyers/sellers',
-            onTap: () {},
-          ),
-          _buildMenuItem(
-            context,
-            icon: Icons.help_outline,
-            title: 'Help & Support',
-            subtitle: 'Get assistance',
-            onTap: () {},
-          ),
           _buildMenuItem(
             context,
             icon: Icons.info_outline,
