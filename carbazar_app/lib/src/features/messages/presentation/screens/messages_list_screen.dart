@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/constants/route_constants.dart';
 import '../widgets/conversation_card.dart';
 
 class MessagesListScreen extends ConsumerStatefulWidget {
@@ -80,12 +82,14 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
                         unreadCount: conversation['unreadCount'],
                         isOnline: conversation['isOnline'],
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Open chat with ${conversation['userName']}'),
-                            ),
+                          // Navigate to chat screen
+                          context.push(
+                            RouteConstants.chat,
+                            extra: {
+                              'userId': conversation['userId'],
+                              'userName': conversation['userName'],
+                            },
                           );
-                          // TODO: Navigate to chat screen
                         },
                       );
                     },
